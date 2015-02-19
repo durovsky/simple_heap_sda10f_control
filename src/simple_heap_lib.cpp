@@ -1,7 +1,7 @@
 /*********************************************************************************************//**
 * @file simple_heap_lib.cpp
 * 
-* class Robot handles communication using basic robot driver without MoveIt library
+* class Robot handles communication using basic robot driver without MoveIt Library
 *
 * Copyright (c)
 * Frantisek Durovsky 
