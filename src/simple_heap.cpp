@@ -108,24 +108,36 @@ int main(int argc, char *argv[])
 
     //First small torso movement to power on servo controller
     sda10f.startTrajectory(sda10f.Trajectory_init());
+    ros::Duration(5).sleep();
 
-    //Move robot to zero_arm position
+ /*   //Move robot to zero_arm position
     std::cout << "Press enter to move the robot to scan position: ";
     std::cin.get();
     sda10f.startTrajectory(sda10f.Trajectory_zero_arm());
-    ros::Duration(10).sleep();
+    ;
+*/
+    //Suction handler for sub20 board
+    geometry_msgs::PoseStamped actual_pose;
+    sub20_my_pkg::sub20_DO sub20_srv;
+    bool suction_flag = false;
 
      while(ros::ok())
      {
-         std::cout << "Press enter to pick an object: ";
-         std::cin.get();
+         //std::cout << "Press enter to pick an object: ";
+         //std::cin.get();
 
          //Basic robot position
          sda10f.startTrajectory(sda10f.Trajectory_start());
          ros::Duration(3).sleep();
 
+         //Turn off vacum
+         sub20_srv.request.PORT0_5_command = false;
+         sub20_srv.request.pin_to_change = "PORT0_5";
+         sub20_client.call(sub20_srv);
+         suction_flag = false;
+
          //====================================================
-         //Get object positions from pointcloud
+         //Get object position from pointcloud
          //====================================================
          int number_of_remaining_objects;
          geometry_msgs::Pose current_object_pose;
@@ -260,18 +272,14 @@ int main(int argc, char *argv[])
                 group_left_arm.asyncExecute(arm_left_plan);
              }
 
-             //Suction handler using sub20 board
-             geometry_msgs::PoseStamped actual_pose;
-             sub20_my_pkg::sub20_DO sub20_srv;
-
-             bool suction_flag = false;
-             int loop_limit = 1000;
+             //Suction handler variables
+             int loop_limit = 1300;
              float suction_on_thresh,
                    suction_off_y_thresh,
                    suction_off_z_thresh;
 
              suction_on_thresh = sda10f.object_grasp.position.z + 0.01;
-             suction_off_z_thresh = 1.23;
+             suction_off_z_thresh = 1.24;
 
              //Different thresholds for torso_60 and torso_90 bin_dump
              if((current_object_pose.position.x > 0) && (current_object_pose.position.x < 1)) suction_off_y_thresh = 0.32;
@@ -300,7 +308,7 @@ int main(int argc, char *argv[])
                  }
                  ros::Duration(0.01).sleep();
              }
-             ros::Duration(2).sleep();
+             ros::Duration(1).sleep();
          }
 
          else
@@ -314,51 +322,58 @@ int main(int argc, char *argv[])
           //======================================================
           if(number_of_remaining_objects == 0)
           {
-             std::vector<geometry_msgs::Pose> arm_right_cartesian_waypoints;
-             moveit_msgs::RobotTrajectory arm_right_trajectory;
+              std::cout << "Place bin on table(y / n): ";
+              char user_choice;
+              std::cin >> user_choice;
 
-             //=====================================================
-             //Trajectory composition
-             //=====================================================
-             arm_right_cartesian_waypoints.push_back(sda10f.approach_to_table);
-             arm_right_cartesian_waypoints.push_back(sda10f.place_bin_on_table);
-             arm_right_cartesian_waypoints.push_back(sda10f.release_contact);
-             arm_right_cartesian_waypoints.push_back(sda10f.move_away_from_bin);
-             arm_right_cartesian_waypoints.push_back(sda10f.back_to_initial_pose);
+              if(user_choice == 'y')
+              {
+                 std::vector<geometry_msgs::Pose> arm_right_cartesian_waypoints;
+                 moveit_msgs::RobotTrajectory arm_right_trajectory;
 
-             //Several attempts of cartesian trajectory computation
-             const int max_cartesian_attempts = 20;
-             int acutal_number_of_cartesian_attempts = 1;
-             double arm_right_fraction = 0;
-             while ((arm_right_fraction != 1) && (acutal_number_of_cartesian_attempts < max_cartesian_attempts))
-             {
-                arm_right_fraction = group_right_arm.computeCartesianPath(arm_right_cartesian_waypoints, 0.02, 0, arm_right_trajectory, false);
-                ROS_INFO("Cartesian computation n. %i (cartesian path) (%.2f%% acheived)",acutal_number_of_cartesian_attempts, arm_right_fraction * 100.0);
-                acutal_number_of_cartesian_attempts++;
-             }
+                 //=====================================================
+                 //Trajectory composition
+                 //=====================================================
+                 arm_right_cartesian_waypoints.push_back(sda10f.approach_to_table);
+                 arm_right_cartesian_waypoints.push_back(sda10f.place_bin_on_table);
+                 arm_right_cartesian_waypoints.push_back(sda10f.release_contact);
+                 arm_right_cartesian_waypoints.push_back(sda10f.move_away_from_bin);
+                 arm_right_cartesian_waypoints.push_back(sda10f.back_to_initial_pose);
 
-             //=======================================================
-             //Robot movement
-             //=======================================================
-             if (arm_right_fraction == 1)
-             {
-                //Adding velocities to cartesian trajectory
-                robot_trajectory::RobotTrajectory arm_right_rt_01(group_right_arm.getCurrentState()->getRobotModel(),"arm_right");
-                arm_right_rt_01.setRobotTrajectoryMsg(*group_right_arm.getCurrentState(), arm_right_trajectory);
-                trajectory_processing::IterativeParabolicTimeParameterization arm_right_iptp;
-                //Compute Time Stamps
-                const double max_velocity_scaling = 1.0;
-                bool arm_right_success = arm_right_iptp.computeTimeStamps(arm_right_rt_01, max_velocity_scaling);
-                ROS_INFO("Computed time stamps: %s", arm_right_success ? "SUCCEDED" : "FAILED");
+                 //Several attempts of cartesian trajectory computation
+                 const int max_cartesian_attempts = 20;
+                 int acutal_number_of_cartesian_attempts = 1;
+                 double arm_right_fraction = 0;
+                 while ((arm_right_fraction != 1) && (acutal_number_of_cartesian_attempts < max_cartesian_attempts))
+                 {
+                    arm_right_fraction = group_right_arm.computeCartesianPath(arm_right_cartesian_waypoints, 0.02, 0, arm_right_trajectory, false);
+                    ROS_INFO("Cartesian computation n. %i (cartesian path) (%.2f%% acheived)",acutal_number_of_cartesian_attempts, arm_right_fraction * 100.0);
+                    acutal_number_of_cartesian_attempts++;
+                  }
 
-                //Get robot trajectory from RobotTrajectory
-                arm_right_rt_01.getRobotTrajectoryMsg(arm_right_trajectory);
-                arm_right_plan.trajectory_ = arm_right_trajectory;
-                //ROS_INFO_STREAM("Trajectory" << arm_left_trajectory);
-                group_right_arm.execute(arm_right_plan);
-            }
+                  //=======================================================
+                  //Robot movement
+                  //=======================================================
+                  if (arm_right_fraction == 1)
+                  {
+                     //Adding velocities to cartesian trajectory
+                     robot_trajectory::RobotTrajectory arm_right_rt_01(group_right_arm.getCurrentState()->getRobotModel(),"arm_right");
+                     arm_right_rt_01.setRobotTrajectoryMsg(*group_right_arm.getCurrentState(), arm_right_trajectory);
+                     trajectory_processing::IterativeParabolicTimeParameterization arm_right_iptp;
+                     //Compute Time Stamps
+                     const double max_velocity_scaling = 1.0;
+                     bool arm_right_success = arm_right_iptp.computeTimeStamps(arm_right_rt_01, max_velocity_scaling);
+                     ROS_INFO("Computed time stamps: %s", arm_right_success ? "SUCCEDED" : "FAILED");
+
+                    //Get robot trajectory from RobotTrajectory
+                    arm_right_rt_01.getRobotTrajectoryMsg(arm_right_trajectory);
+                    arm_right_plan.trajectory_ = arm_right_trajectory;
+                    //ROS_INFO_STREAM("Trajectory" << arm_left_trajectory);
+                    group_right_arm.execute(arm_right_plan);
+                  }
             ros::Duration(2).sleep();
-        }
+            }
+          }
      }
 
     return(EXIT_SUCCESS);
