@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     std::cout << "Sub20 client initialized!" << std::endl;
 
     //Create objects for manipulation with robot
-    Robot sda10f(nh);
+    Robot sda10f(&nh);
     moveit::planning_interface::MoveGroup group_left_arm("arm_left");
     moveit::planning_interface::MoveGroup group_right_arm("arm_right");
 
