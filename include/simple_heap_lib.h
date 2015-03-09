@@ -65,21 +65,26 @@ typedef actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>
 
 class Robot
 {
-private:
-    TrajClient* traj_client_;
-    
-    //"Wait for message" flags for joint_states Callbacks
-     bool r1_recieved;
-     bool r2_recieved;
-     bool b1_recieved;
-     bool b2_recieved;
-
 public:
-     //Joint State variables for current robot state
-     sensor_msgs::JointState r1;
-     sensor_msgs::JointState r2;
-     sensor_msgs::JointState b1;
-     sensor_msgs::JointState b2;
+
+     Robot(ros::NodeHandle *nh);
+     ~Robot();
+          
+     void startTrajectory(control_msgs::FollowJointTrajectoryGoal goal);
+     control_msgs::FollowJointTrajectoryGoal Trajectory_init();
+     control_msgs::FollowJointTrajectoryGoal Trajectory_zero_arm();
+     control_msgs::FollowJointTrajectoryGoal Trajectory_start();
+     control_msgs::FollowJointTrajectoryGoal Trajectory_torso_60();
+          
+     actionlib::SimpleClientGoalState getState();
+
+     void r1_Callback(const sensor_msgs::JointState::ConstPtr &msg);
+     void r2_Callback(const sensor_msgs::JointState::ConstPtr &msg);
+     void b1_Callback(const sensor_msgs::JointState::ConstPtr &msg);
+     void b2_Callback(const sensor_msgs::JointState::ConstPtr &msg);
+       
+     bool getFlag(bool &flag_name, bool value);
+     void setFlag(bool &flag_name);
 
      //Left arm waypoints
      geometry_msgs::Pose bin_approach_torso_90;
@@ -91,10 +96,10 @@ public:
      geometry_msgs::Pose bin_release_torso_60;
      geometry_msgs::Pose bin_dump_torso_60;
      geometry_msgs::Pose end_pose_torso_60;
-     
+
      geometry_msgs::Pose object_approach;
      geometry_msgs::Pose object_grasp;
-     
+
      //Right arm waypoints
      geometry_msgs::Pose approach_to_table;
      geometry_msgs::Pose place_bin_on_table;
@@ -102,23 +107,26 @@ public:
      geometry_msgs::Pose move_away_from_bin;
      geometry_msgs::Pose back_to_initial_pose;
 
-     Robot(ros::NodeHandle nh);
-     ~Robot();
-     void r1_Callback(const sensor_msgs::JointState::ConstPtr &msg);
-     void r2_Callback(const sensor_msgs::JointState::ConstPtr &msg);
-     void b1_Callback(const sensor_msgs::JointState::ConstPtr &msg);
-     void b2_Callback(const sensor_msgs::JointState::ConstPtr &msg);
-          
-     void startTrajectory(control_msgs::FollowJointTrajectoryGoal goal);
-     control_msgs::FollowJointTrajectoryGoal Trajectory_init();
-     control_msgs::FollowJointTrajectoryGoal Trajectory_zero_arm();
-     control_msgs::FollowJointTrajectoryGoal Trajectory_start();
-     control_msgs::FollowJointTrajectoryGoal Trajectory_torso_60();
-     
-     actionlib::SimpleClientGoalState getState();
-
-     void fill_waypoint_values(void);
-  
      const double no_object_to_grasp;
+
+private:
+
+     TrajClient* traj_client_;
+
+     //"Wait for message" flags for joint_states Callbacks
+     bool r1_recieved;
+     bool r2_recieved;
+     bool b1_recieved;
+     bool b2_recieved;
+
+     //Joint State variables for current robot state
+     sensor_msgs::JointState r1;
+     sensor_msgs::JointState r2;
+     sensor_msgs::JointState b1;
+     sensor_msgs::JointState b2;
+
+
+
+
 };  
 #endif  //SIMPLE_HEAP_LIB_H

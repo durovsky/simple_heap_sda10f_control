@@ -41,7 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <simple_heap_lib.h>
 
 //initialize the action client and wait for action server to come up
-Robot::Robot(ros::NodeHandle nh) :
+Robot::Robot(ros::NodeHandle *nh) :
     r1_recieved(false),
     r2_recieved(false),
     b1_recieved(false),
@@ -57,8 +57,142 @@ Robot::Robot(ros::NodeHandle nh) :
        ROS_INFO("Waiting for the trajectory_action server");
     }
 
-    fill_waypoint_values();
     ROS_INFO_STREAM("Joint trajectory action client initialized");
+
+    //Left Arm waypoints
+    ///////////////////////////////////////////
+    //Left 90deg torso orientation
+    bin_approach_torso_90.position.x = -0.0116;
+    bin_approach_torso_90.position.y = 0.5860;
+    bin_approach_torso_90.position.z = 1.21;
+
+    bin_approach_torso_90.orientation.x = 0;
+    bin_approach_torso_90.orientation.y = 0;
+    bin_approach_torso_90.orientation.z = 0;
+    bin_approach_torso_90.orientation.w = 1;
+
+    //------------------------------------------------
+
+    bin_release_torso_90.position.x = 0.25;
+    bin_release_torso_90.position.y = 0.40;
+    bin_release_torso_90.position.z = 1.25;
+
+    bin_release_torso_90.orientation.x = 0;
+    bin_release_torso_90.orientation.y = 0;
+    bin_release_torso_90.orientation.z = 0;
+    bin_release_torso_90.orientation.w = 1;
+    //------------------------------------------------
+
+    bin_dump_torso_90.position.x = 0.25;
+    bin_dump_torso_90.position.y = 0.40;
+    bin_dump_torso_90.position.z = 1.21;
+
+    bin_dump_torso_90.orientation.x = 0;
+    bin_dump_torso_90.orientation.y = 0;
+    bin_dump_torso_90.orientation.z = 0;
+    bin_dump_torso_90.orientation.w = 1;
+    //--------------------------------------------------
+
+    end_pose_torso_90.position.x = -0.0116;
+    end_pose_torso_90.position.y = 0.4;
+    end_pose_torso_90.position.z = 1.21;
+
+    end_pose_torso_90.orientation.x = 0;
+    end_pose_torso_90.orientation.y = 0;
+    end_pose_torso_90.orientation.z = 0;
+    end_pose_torso_90.orientation.w = 1;
+    //---------------------------------------------------
+
+    //Left 60deg torso orientation
+    bin_approach_torso_60.position.x = 0.2950;
+    bin_approach_torso_60.position.y = 0.5597;
+    bin_approach_torso_60.position.z = 1.21;
+
+    bin_approach_torso_60.orientation.x = 0;
+    bin_approach_torso_60.orientation.y = 0;
+    bin_approach_torso_60.orientation.z = 0;
+    bin_approach_torso_60.orientation.w = 1;
+
+    //------------------------------------------------
+
+    bin_release_torso_60.position.x = 0.42;
+    bin_release_torso_60.position.y = 0.3;
+    bin_release_torso_60.position.z = 1.25;
+
+    bin_release_torso_60.orientation.x = 0;
+    bin_release_torso_60.orientation.y = 0;
+    bin_release_torso_60.orientation.z = 0;
+    bin_release_torso_60.orientation.w = 1;
+    //------------------------------------------------
+
+    bin_dump_torso_60.position.x = 0.42;
+    bin_dump_torso_60.position.y = 0.3;
+    bin_dump_torso_60.position.z = 1.21;
+
+    bin_dump_torso_60.orientation.x = 0;
+    bin_dump_torso_60.orientation.y = 0;
+    bin_dump_torso_60.orientation.z = 0;
+    bin_dump_torso_60.orientation.w = 1;
+    //--------------------------------------------------
+
+    end_pose_torso_60.position.x = 0.20;
+    end_pose_torso_60.position.y = 0.4;
+    end_pose_torso_60.position.z = 1.21;
+
+    end_pose_torso_60.orientation.x = 0;
+    end_pose_torso_60.orientation.y = 0;
+    end_pose_torso_60.orientation.z = 0;
+    end_pose_torso_60.orientation.w = 1;
+    //---------------------------------------------------
+
+    //Right Arm waypoints
+    //////////////////////////////////////////////
+    approach_to_table.position.x = 0.4082;
+    approach_to_table.position.y = 0.4081;
+    approach_to_table.position.z = 1.1271;
+
+    approach_to_table.orientation.x = 0.478716;
+    approach_to_table.orientation.y = 0.520033;
+    approach_to_table.orientation.z = 0.514818;
+    approach_to_table.orientation.w = 0.485139;
+
+    place_bin_on_table.position.x = 0.4082;
+    place_bin_on_table.position.y = 0.4081;
+    place_bin_on_table.position.z = 0.95;
+
+    place_bin_on_table.orientation.x = 0.478716;
+    place_bin_on_table.orientation.y = 0.520033;
+    place_bin_on_table.orientation.z = 0.514818;
+    place_bin_on_table.orientation.w = 0.485139;
+
+    release_contact.position.x = 0.4082;
+    release_contact.position.y = 0.4081;
+    release_contact.position.z = 0.88;
+
+    release_contact.orientation.x = 0.478716;
+    release_contact.orientation.y = 0.520033;
+    release_contact.orientation.z = 0.514818;
+    release_contact.orientation.w = 0.485139;
+
+    move_away_from_bin.position.x = 0.50;
+    move_away_from_bin.position.y = 0.4081;
+    move_away_from_bin.position.z = 0.88;
+
+    move_away_from_bin.orientation.x = 0.478716;
+    move_away_from_bin.orientation.y = 0.520033;
+    move_away_from_bin.orientation.z = 0.514818;
+    move_away_from_bin.orientation.w = 0.485139;
+
+    back_to_initial_pose.position.x = 0.318045;
+    back_to_initial_pose.position.y = 0.585989;
+    back_to_initial_pose.position.z = 1.21752;
+
+    back_to_initial_pose.orientation.x = 0.478716;
+    back_to_initial_pose.orientation.y = 0.520033;
+    back_to_initial_pose.orientation.z = 0.514818;
+    back_to_initial_pose.orientation.w = 0.485139;
+
+
 }
 
 //clean up the action client
@@ -594,142 +728,5 @@ Robot::getState()
 
 /////////////////////////////////////////////////////////////////////////
 
-void
-Robot::fill_waypoint_values()
-{
-    //Left Arm waypoints
-    ///////////////////////////////////////////
-    //Left 90deg torso orientation
-    bin_approach_torso_90.position.x = -0.0116;
-    bin_approach_torso_90.position.y = 0.5860;
-    bin_approach_torso_90.position.z = 1.21;
-
-    bin_approach_torso_90.orientation.x = 0;
-    bin_approach_torso_90.orientation.y = 0;
-    bin_approach_torso_90.orientation.z = 0;
-    bin_approach_torso_90.orientation.w = 1;
-
-    //------------------------------------------------
-
-    bin_release_torso_90.position.x = 0.25;
-    bin_release_torso_90.position.y = 0.40;
-    bin_release_torso_90.position.z = 1.25;
-
-    bin_release_torso_90.orientation.x = 0;
-    bin_release_torso_90.orientation.y = 0;
-    bin_release_torso_90.orientation.z = 0;
-    bin_release_torso_90.orientation.w = 1;
-    //------------------------------------------------
-
-    bin_dump_torso_90.position.x = 0.25;
-    bin_dump_torso_90.position.y = 0.40;
-    bin_dump_torso_90.position.z = 1.21;
-
-    bin_dump_torso_90.orientation.x = 0;
-    bin_dump_torso_90.orientation.y = 0;
-    bin_dump_torso_90.orientation.z = 0;
-    bin_dump_torso_90.orientation.w = 1;
-    //--------------------------------------------------
-
-    end_pose_torso_90.position.x = -0.0116;
-    end_pose_torso_90.position.y = 0.4;
-    end_pose_torso_90.position.z = 1.21;
-
-    end_pose_torso_90.orientation.x = 0;
-    end_pose_torso_90.orientation.y = 0;
-    end_pose_torso_90.orientation.z = 0;
-    end_pose_torso_90.orientation.w = 1;
-    //---------------------------------------------------
-
-    //Left 60deg torso orientation
-    bin_approach_torso_60.position.x = 0.2950;
-    bin_approach_torso_60.position.y = 0.5597;
-    bin_approach_torso_60.position.z = 1.21;
-
-    bin_approach_torso_60.orientation.x = 0;
-    bin_approach_torso_60.orientation.y = 0;
-    bin_approach_torso_60.orientation.z = 0;
-    bin_approach_torso_60.orientation.w = 1;
-
-    //------------------------------------------------
-
-    bin_release_torso_60.position.x = 0.42;
-    bin_release_torso_60.position.y = 0.3;
-    bin_release_torso_60.position.z = 1.25;
-
-    bin_release_torso_60.orientation.x = 0;
-    bin_release_torso_60.orientation.y = 0;
-    bin_release_torso_60.orientation.z = 0;
-    bin_release_torso_60.orientation.w = 1;
-    //------------------------------------------------
-
-    bin_dump_torso_60.position.x = 0.42;
-    bin_dump_torso_60.position.y = 0.3;
-    bin_dump_torso_60.position.z = 1.21;
-
-    bin_dump_torso_60.orientation.x = 0;
-    bin_dump_torso_60.orientation.y = 0;
-    bin_dump_torso_60.orientation.z = 0;
-    bin_dump_torso_60.orientation.w = 1;
-    //--------------------------------------------------
-
-    end_pose_torso_60.position.x = 0.20;
-    end_pose_torso_60.position.y = 0.4;
-    end_pose_torso_60.position.z = 1.21;
-
-    end_pose_torso_60.orientation.x = 0;
-    end_pose_torso_60.orientation.y = 0;
-    end_pose_torso_60.orientation.z = 0;
-    end_pose_torso_60.orientation.w = 1;
-    //---------------------------------------------------
-
-    //Right Arm waypoints
-    //////////////////////////////////////////////
-    approach_to_table.position.x = 0.4082;
-    approach_to_table.position.y = 0.4081;
-    approach_to_table.position.z = 1.1271;
-
-    approach_to_table.orientation.x = 0.478716;
-    approach_to_table.orientation.y = 0.520033;
-    approach_to_table.orientation.z = 0.514818;
-    approach_to_table.orientation.w = 0.485139;
-
-    place_bin_on_table.position.x = 0.4082;
-    place_bin_on_table.position.y = 0.4081;
-    place_bin_on_table.position.z = 0.95;
-
-    place_bin_on_table.orientation.x = 0.478716;
-    place_bin_on_table.orientation.y = 0.520033;
-    place_bin_on_table.orientation.z = 0.514818;
-    place_bin_on_table.orientation.w = 0.485139;
-
-    release_contact.position.x = 0.4082;
-    release_contact.position.y = 0.4081;
-    release_contact.position.z = 0.88;
-
-    release_contact.orientation.x = 0.478716;
-    release_contact.orientation.y = 0.520033;
-    release_contact.orientation.z = 0.514818;
-    release_contact.orientation.w = 0.485139;
-
-    move_away_from_bin.position.x = 0.50;
-    move_away_from_bin.position.y = 0.4081;
-    move_away_from_bin.position.z = 0.88;
-
-    move_away_from_bin.orientation.x = 0.478716;
-    move_away_from_bin.orientation.y = 0.520033;
-    move_away_from_bin.orientation.z = 0.514818;
-    move_away_from_bin.orientation.w = 0.485139;
-
-    back_to_initial_pose.position.x = 0.318045;
-    back_to_initial_pose.position.y = 0.585989;
-    back_to_initial_pose.position.z = 1.21752;
-
-    back_to_initial_pose.orientation.x = 0.478716;
-    back_to_initial_pose.orientation.y = 0.520033;
-    back_to_initial_pose.orientation.z = 0.514818;
-    back_to_initial_pose.orientation.w = 0.485139;
-
-}
 
 #endif  //SIMPLE_HEAP_LIB_CPP
