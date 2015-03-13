@@ -76,16 +76,11 @@ public:
      control_msgs::FollowJointTrajectoryGoal Trajectory_start();
      control_msgs::FollowJointTrajectoryGoal Trajectory_torso_60();
           
-     actionlib::SimpleClientGoalState getState();
-
      void r1_Callback(const sensor_msgs::JointState::ConstPtr &msg);
      void r2_Callback(const sensor_msgs::JointState::ConstPtr &msg);
      void b1_Callback(const sensor_msgs::JointState::ConstPtr &msg);
      void b2_Callback(const sensor_msgs::JointState::ConstPtr &msg);
-       
-     bool getFlag(bool &flag_name, bool value);
-     void setFlag(bool &flag_name);
-
+        
      //Left arm waypoints
      geometry_msgs::Pose bin_approach_torso_90;
      geometry_msgs::Pose bin_release_torso_90;

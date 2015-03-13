@@ -714,17 +714,7 @@ Robot::Trajectory_torso_60()
 
     //return the goal
     return goal;
-
 }
-
-/////////////////////////////////////////////////////////////////////////
-
-//Returns the current state of the action
-actionlib::SimpleClientGoalState 
-Robot::getState()
-    {
-        return traj_client_->getState();
-    }
 
 /////////////////////////////////////////////////////////////////////////
 
